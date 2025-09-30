@@ -1,7 +1,39 @@
-import { drizzle } from 'drizzle-orm'
+import 'dotenv/config'
+import { drizzle } from 'drizzle-orm/postgres-js';
+import { eq } from 'drizzle-orm';
+import { users } from './db/schema'
+
+const db = drizzle(process.env.DATABASE_URL!);
 
 async function main() {
-  const db = drizzle('postgres-js', process.env.DATABASE_URL);
-}
+  const user: typeof users.$inferInsert = {
+    name: 'John',
+    email: 'john123@test.com'
+  };
+
+  await db.insert(users).values(user);
+  console.log('New user created!')
+
+  const allUsers = await db.select().from(users);
+  console.log('Getting all users from the database:', allUsers)
+  /*
+  const users: {
+    id: number;
+    name: string;
+    email: string;
+  }[]
+  */
+
+  await db
+    .update(users)
+    .set({ name: 'Steve', })
+    .where(eq(users.email, user.email))
+  console.log('User info updated!')
+
+  await db
+    .delete(users)
+    .where(eq(users.email, user.email))
+  console.log('User deleted!')
+  }
 
 main();
