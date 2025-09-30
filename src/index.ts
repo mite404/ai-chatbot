@@ -34,6 +34,6 @@ async function main() {
     .delete(users)
     .where(eq(users.email, user.email))
   console.log('User deleted!')
-}
+  }
 
 main();
